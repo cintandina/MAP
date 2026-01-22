@@ -1,0 +1,22 @@
+{% extends "_base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <!-- Título -->
+        <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Dashboard</h1>
+
+        <!-- Mensaje de bienvenida -->
+        <p class="text-center text-gray-700 text-lg">
+            Bienvenido, <span class="font-semibold text-green-600">{{ user.username }}</span>.
+        </p>
+
+        <!-- Mensaje principal -->
+        <p class="text-center text-gray-700 text-lg mt-4">
+            Selecciona una opción del menú.
+        </p>
+    </div>
+</div>
+{% endblock %}

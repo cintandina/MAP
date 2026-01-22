@@ -1,0 +1,126 @@
+{% extends "_base.html" %}
+{% block title %}
+Actualizar Seriales
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <h1 class="text-3xl font-bold text-green-700 text-center mb-8">Actualizar Seriales</h1>
+
+        <!-- Selección de cliente -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label for="cliente" class="text-sm font-semibold text-gray-700 mb-2 block">Cliente</label>
+                <select id="cliente" class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <option value="">Seleccione un cliente</option>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <button 
+                    id="buscar"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 mt-6">
+                    Buscar Seriales
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabla de seriales -->
+        <div class="overflow-x-auto">
+            <table class="table-auto w-full border-collapse border border-gray-300 text-sm">
+                <thead>
+                    <tr class="bg-green-100">
+                        <th class="border border-gray-300 px-4 py-2">Serial</th>
+                        <th class="border border-gray-300 px-4 py-2">Producto</th>
+                        <th class="border border-gray-300 px-4 py-2">Estado</th>
+                        <th class="border border-gray-300 px-4 py-2">Campo 1</th>
+                        <th class="border border-gray-300 px-4 py-2">Campo 2</th>
+                        <th class="border border-gray-300 px-4 py-2">Campo 3</th>
+                        <th class="border border-gray-300 px-4 py-2">Campo 4</th>
+                        <th class="border border-gray-300 px-4 py-2">Campo 5</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla_seriales" class="text-center">
+                    <!-- Aquí se llenarán los seriales dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulario para actualizar seriales -->
+        <form id="actualizar-form" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <div>
+                <label for="desde" class="text-sm font-semibold text-gray-700 mb-2 block">Desde</label>
+                <input type="text" id="desde" name="desde" 
+                       class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+                <label for="hasta" class="text-sm font-semibold text-gray-700 mb-2 block">Hasta</label>
+                <input type="text" id="hasta" name="hasta" 
+                       class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+            </div>
+
+            {% for i in 1|to:5 %}
+            <div>
+                <label for="campo{{ i }}" class="text-sm font-semibold text-gray-700 mb-2 block">Campo {{ i }}</label>
+                <input type="text" id="campo{{ i }}" name="campo{{ i }}" 
+                       class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+            </div>
+            {% endfor %}
+
+            <div class="col-span-2">
+                <button type="submit" 
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    Asociar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('buscar').addEventListener('click', function () {
+    const clienteId = document.getElementById('cliente').value;
+
+    fetch(`/actualizar_seriales/?cliente_id=${clienteId}`)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('tabla_seriales');
+            tbody.innerHTML = ''; // Limpia la tabla
+            data.forEach(serial => {
+                const row = `<tr>
+                    <td class="border border-gray-300 px-4 py-2">${serial.serial}</td>
+                    <td class="border border-gray-300 px-4 py-2">${serial.producto__nombre}</td>
+                    <td class="border border-gray-300 px-4 py-2">${serial.estado}</td>
+                    <td class="border border-gray-300 px-4 py-2">${serial.campo1}</td>
+                    <td class="border border-gray-300 px-4 py-2">${serial.campo2}</td>
+                    <td class="border border-gray-300 px-4 py-2">${serial.campo3}</td>
+                    <td class="border border-gray-300 px-4 py-2">${serial.campo4}</td>
+                    <td class="border border-gray-300 px-4 py-2">${serial.campo5}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        })
+        .catch(error => console.error('Error al buscar seriales:', error));
+});
+
+document.getElementById('actualizar-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+
+    fetch('/actualizar_seriales/', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                alert('Seriales actualizados correctamente');
+            }
+        })
+        .catch(error => console.error('Error al actualizar seriales:', error));
+});
+</script>
+{% endblock %}

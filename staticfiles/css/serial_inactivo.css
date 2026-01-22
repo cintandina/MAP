@@ -1,0 +1,165 @@
+/* Variables CSS para colores */
+:root {
+    --dark-green: #00833f; /* Un verde más oscuro si se necesita */
+    --dark-text: #666666;
+}
+
+body, h1, h2, h3, p, span, a {
+  font-family: 'Poppins', sans-serif !important;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--dark-text);
+  overflow-x: auto;
+  justify-content: center;
+}
+
+/* Header */
+.header {
+  background: url('/static/assets/FONDO_CINTA_DE_SEGURIDAD_INTELIGENTE-01.png');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Contenedor interno */
+.banner-container {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  text-align: center;
+  margin-top: 15px;
+  justify-content: center;
+}
+/* Texto */
+
+.line1 h1 {
+  font-size: 3em;
+  color: var(--dark-green);
+}
+
+.line2 {
+  font-size: 3em;
+  color: var(--dark-text);
+}
+
+.line1 h1,
+.line2 {
+  display: block;
+  text-align: center; 
+}
+
+.line3 {
+  font-size: 2.3em;
+  color: var(--dark-green);
+}
+
+/* Imagen central */
+.pegatin-cintandina {
+  width: 400px;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.line4 {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.line4 p {
+  font-size: 1em;
+  color: var(--dark-text);
+  text-align: justify;
+  line-height: 1.5;
+  max-width: 1150px;   
+  margin: 10px auto;   
+  padding: 0 40px;     
+}
+
+
+.line5 {
+  font-size: 1em;
+  color: var(--dark-text); 
+  text-align: center;
+
+}
+
+
+.line1 h1,
+.line2,
+.line5 {
+  line-height: 1.2; /* Reduce el espacio entre líneas */
+  margin: 0; /* Elimina márgenes que añaden separación extra */
+  padding: 0;
+}
+
+
+/* ------------------- ESTILOS RESPONSIVE ------------------- */
+
+/* Celulares */
+@media (max-width: 700px) {
+  .banner-container {
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    text-align: center; 
+    overflow-x: auto;
+  }
+
+ .pegatin-cintandina {
+  width: 300px;             
+}
+
+  
+.line1 h1 {
+  font-size: 2.5em;
+}
+
+    
+.line2 {
+  font-size: 2.0em;
+  font-weight: bold;
+}
+
+.line3 {
+    display: block; 
+    font-size: 1em;
+    line-height: 1.1;
+    margin: 0 45px; 
+    text-align: center;
+  }
+
+.line3 {
+  line-height: 1.2;
+  margin: 20 35px;
+  width: auto;
+  text-align: center;
+}
+
+
+.line4 p{
+    font-size: 0.5em;
+    text-align: justify;
+    line-height: 1;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 20px;
+    
+}
+.line5 {
+  font-size: 0.6em;
+  botton: 0;
+}
+
+.line1 h1,
+.line2 {
+  line-height: 1.2;
+}
+
+}
+   

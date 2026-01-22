@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrega Exitosa - {{ solicitud.razon_social|default:"Cintandina SA" }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background-image: url('{% static "images/FONDO_CINTA_DE_SEGURIDAD_INTELIGENTE.png" %}');
+      background-size: cover;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    .contenedor-principal {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px;
+    }
+    .logo img {
+      width: 200px;
+      height: auto;
+      object-fit: cover;
+      display: block;
+      margin: 20px auto;
+    }
+    .contenedor-mensaje {
+      background-color: white;
+      border-radius: 25px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .boton {
+      display: inline-block;
+      background-color: #787E87;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 15px;
+      font-size: 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .boton:hover {
+      background-color: #5f656b;
+    }
+    .boton i {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor-principal">
+    <div class="logo">
+       <img src="{{ solicitud.logo_url }}" alt="Logo de {{ solicitud.razon_social|default:'Empresa' }}" class="max-w-xs mb-4">
+    </div>
+    <div class="contenedor-mensaje">
+      <h2><i class="fas fa-check-circle" style="color: #787E87; margin-right: 10px;"></i>Entrega Registrada con Éxito</h2>
+      <p>Gracias, <strong>{{ entrega.nombre|default:"Usuario" }}</strong>, por confirmar la entrega.</p>
+
+      </a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+{% extends "_base.html" %}
+
+{% block title %}Actualizar Producto{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-xl">
+        <h1 class="text-3xl font-bold text-blue-700 text-center mb-6">Actualizar Producto</h1>
+        <form method="post" class="grid grid-cols-1 gap-6">
+            {% csrf_token %}
+
+            <!-- Cliente (lista desplegable) -->
+            <div>
+                <label for="cliente" class="text-sm font-semibold text-gray-700 mb-2 block">Cliente</label>
+                <select 
+                    name="cliente" 
+                    id="cliente" 
+                    class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    required>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}" {% if cliente.id == form.instance.cliente.id %}selected{% endif %}>
+                            {{ cliente.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Nombre del Producto -->
+            <div>
+                <label for="nombre" class="text-sm font-semibold text-gray-700 mb-2 block">Nombre del Producto</label>
+                <input 
+                    type="text" 
+                    name="nombre" 
+                    id="nombre" 
+                    class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    value="{{ form.instance.nombre }}"
+                    required>
+            </div>
+
+            <!-- Código de Producto (readonly) -->
+            <div>
+                <label for="codigo_producto" class="text-sm font-semibold text-gray-700 mb-2 block">Código de Producto</label>
+                <input 
+                    type="text" 
+                    name="codigo_producto" 
+                    id="codigo_producto" 
+                    class="w-full border-gray-300 rounded-lg bg-gray-100 focus:ring-0 cursor-not-allowed"
+                    value="{{ form.instance.codigo_producto }}"
+                    readonly>
+            </div>
+
+            <!-- Descripción del Producto -->
+            <div>
+                <label for="descripcion_producto" class="text-sm font-semibold text-gray-700 mb-2 block">Descripción del Producto</label>
+                <textarea 
+                    name="descripcion_producto" 
+                    id="descripcion_producto" 
+                    rows="3" 
+                    class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    required>{{ form.instance.descripcion_producto }}</textarea>
+            </div>
+
+            <!-- Nombres de Campos Adicionales -->
+            <h2 class="text-lg font-semibold text-gray-700 mt-6 mb-2">Actualizar nombres para campos adicionales</h2>
+            <div id="camposGenericos" class="grid grid-cols-1 gap-4">
+                {% for campo in campos_adicionales %}
+                <div>
+                    <label for="{{ campo.nombre }}" class="text-sm font-semibold text-gray-700 mb-2 block">Nombre del {{ campo.nombre }}</label>
+                    <input 
+                        type="text" 
+                        name="{{ campo.nombre }}" 
+                        id="{{ campo.nombre }}" 
+                        class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                        value="{{ campo.valor }}"
+                        placeholder="Campo adicional {{ forloop.counter }}">
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Botón para Actualizar Producto (Centrado) -->
+            <div class="flex justify-center">
+                <button 
+                    type="submit" 
+                    class="bg-green-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Actualizar Producto
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+

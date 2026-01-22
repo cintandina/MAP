@@ -1,0 +1,161 @@
+{% extends "_base.html" %}
+
+{% block title %}Crear Producto{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-xl">
+        <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Crear Producto</h1>
+        <form method="post" class="grid grid-cols-1 gap-6">
+            {% csrf_token %}
+
+            <!-- Cliente -->
+            <div>
+                <label for="cliente" class="text-sm font-semibold text-gray-700 mb-2 block">Cliente</label>
+                <select 
+                    name="cliente" 
+                    id="cliente" 
+                    class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                    required
+                    onchange="loadTemplates(this.value)">
+                    <option value="">Seleccione un cliente</option>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}" {% if form.instance.cliente and form.instance.cliente.id == cliente.id %}selected{% endif %}>
+                            {{ cliente.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Nombre del Producto -->
+            <div>
+                <label for="nombre" class="text-sm font-semibold text-gray-700 mb-2 block">Nombre del Producto</label>
+                <input 
+                    type="text" 
+                    name="nombre" 
+                    id="nombre" 
+                    value="{{ form.instance.nombre|default_if_none:'' }}"
+                    class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                    required>
+            </div>
+
+            <!-- Código de Producto -->
+            <div>
+                <label for="codigo_producto" class="text-sm font-semibold text-gray-700 mb-2 block">Código de Producto</label>
+                <input 
+                    type="text" 
+                    name="codigo_producto" 
+                    id="codigo_producto" 
+                    value="{{ form.instance.codigo_producto|default_if_none:'' }}"
+                    class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                    required>
+            </div>
+
+            <!-- Descripción del Producto -->
+            <div>
+                <label for="descripcion_producto" class="text-sm font-semibold text-gray-700 mb-2 block">Descripción del Producto</label>
+                <textarea 
+                    name="descripcion_producto" 
+                    id="descripcion_producto" 
+                    rows="3" 
+                    class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                    required>{{ form.instance.descripcion_producto|default_if_none:'' }}</textarea>
+            </div>
+
+            <!-- Template -->
+            <div>
+                <label for="template" class="text-sm font-semibold text-gray-700 mb-2 block">Template</label>
+                <select 
+                    name="template" 
+                    id="template" 
+                    class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <option value="">Seleccione un cliente primero</option>
+                    {% if form.instance.cliente %}
+                        {% for template in form.instance.cliente.templates.all %}
+                            <option value="{{ template.id }}" {% if form.instance.template and form.instance.template.id == template.id %}selected{% endif %}>
+                                {{ template.nombre }}
+                            </option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+
+            <!-- Nombres de Campos Adicionales -->
+            <h2 class="text-lg font-semibold text-gray-700 mt-6 mb-2">Definir nombres para campos adicionales</h2>
+            <div id="camposGenericos" class="grid grid-cols-1 gap-4">
+                {% for i in range %}
+                <div>
+                    <label for="nombre_campo{{ i }}" class="text-sm font-semibold text-gray-700 mb-2 block">Nombre del Campo {{ i }}</label>
+                    <input 
+                        type="text" 
+                        name="nombre_campo{{ i }}" 
+                        id="nombre_campo{{ i }}" 
+                        value="{% if i == 1 and form.instance.nombre_campo1 %}{{ form.instance.nombre_campo1 }}
+                                {% elif i == 2 and form.instance.nombre_campo2 %}{{ form.instance.nombre_campo2 }}
+                                {% elif i == 3 and form.instance.nombre_campo3 %}{{ form.instance.nombre_campo3 }}
+                                {% elif i == 4 and form.instance.nombre_campo4 %}{{ form.instance.nombre_campo4 }}
+                                {% elif i == 5 and form.instance.nombre_campo5 %}{{ form.instance.nombre_campo5 }}{% endif %}"
+                        class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" 
+                    >
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Botón para Crear Producto -->
+            <div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    Crear Producto
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script para cargar templates dinámicamente -->
+<script>
+function loadTemplates(clienteId) {
+    const templateSelect = document.getElementById('template');
+    templateSelect.innerHTML = '<option value="">Cargando templates...</option>'; // Mensaje temporal
+
+    if (!clienteId) {
+        templateSelect.innerHTML = '<option value="">Seleccione un template</option>';
+        return;
+    }
+
+    fetch(`/api/templates/${clienteId}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se pudo obtener la lista de templates.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            templateSelect.innerHTML = '<option value="">Seleccione un template</option>';
+            data.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template.id;
+                option.textContent = template.nombre;
+                templateSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar templates:', error);
+            templateSelect.innerHTML = '<option value="">Error al cargar templates</option>';
+        });
+}
+
+// Cargar templates si ya hay un cliente seleccionado al cargar la página
+document.addEventListener("DOMContentLoaded", function () {
+    const clienteSelect = document.getElementById("cliente");
+    if (clienteSelect.value) {
+        loadTemplates(clienteSelect.value);
+    }
+});
+</script>
+
+{% endblock %}
+
+
+

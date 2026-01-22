@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FFFFFF; /* Fondo cambiado a blanco */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            max-width: 200px; /* Aumentado aún más el tamaño del logo */
+            border-radius: 10px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #000000;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 700; /* Roboto Negrita */
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+            font-weight: 400; /* Roboto Normal */
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: white;
+            background-color: #00833F; /* Verde claro */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 700; /* Roboto Negrita */
+        }
+
+        button:hover {
+            background-color: #005B17; /* Verde oscuro */
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{% static 'images/logo_login.svg' %}" alt="Logo">
+    </div>
+    <div class="container">
+        <h1>Iniciar sesión en la plataforma</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="id_username">Tu correo electrónico</label>
+            {{ form.username }}
+            <label for="id_password">Tu contraseña</label>
+            {{ form.password }}
+            <div class="remember-me">
+                <input type="checkbox" id="remember_me" name="remember_me">
+                <label for="remember_me">Acuérdate de mí</label>
+            </div>
+            <div class="button-container">
+                <button type="submit">Inicie sesión en su cuenta</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ cliente.razon_social }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #efefef;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 1.5rem;
+            max-width: 180px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #000;
+            text-align: left;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content {
+            color: #333;
+            font-size: 1rem;
+            line-height: 1.6;
+            text-align: justify;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-block {
+            background-color: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
+        }
+
+        .label {
+            font-weight: bold;
+            color: #000;
+            margin-top: 1rem;
+            margin-bottom: 0.2rem;
+            text-align: left;
+        }
+
+        .value {
+            background-color: #EFEFEF;
+            color: #333;
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            font-size: 0.95rem;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        .alerta {
+            background-color: #787E87;
+            color: white;
+            font-weight: bold;
+            padding: 1.5rem 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1rem;
+        }
+
+        .footer-text {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #333;
+            margin-top: 1.5rem;
+        }
+
+        a {
+            color: #00833F;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                padding: 1.2rem;
+            }
+            .value {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo -->
+    <img src="{% static 'images/LOGO_CINTANDINA.svg' %}" alt="Logo Cintandina" class="logo" />
+
+    <!-- Contenido principal -->
+    <div class="container">
+
+        <!-- Sobre Nosotros -->
+        <div class="section-title">Sobre Nosotros</div>
+        <div class="section-content">
+            Somos una compañía comprometida con brindar soluciones innovadoras y personalizadas para el control y la seguridad en operaciones logísticas e industriales. Con más de una década de experiencia, nos especializamos en ofrecer productos que integran tecnología avanzada y funcionalidad, diseñados para adaptarse a las necesidades de nuestros clientes.
+        </div>
+        <div class="section-content">
+            Nuestras soluciones incluyen sistemas de identificación, etiquetado y embalaje inteligente que optimizan procesos, garantizan trazabilidad y refuerzan la protección de sus productos a lo largo de toda la cadena de suministro.
+        </div>
+
+        <!-- Datos del cliente -->
+        <div class="info-block">
+
+           
+
+            {% if producto.nombre_campo1 and serial.campo1 %}
+            
+            {% endif %}
+
+            {% if producto.nombre_campo2 and serial.campo2 %}
+            <div class="label">{{ producto.nombre_campo2 }}</div>
+            <div class="value">{{ serial.campo2 }}</div>
+            {% endif %}
+
+            {% if producto.nombre_campo3 and serial.campo3 %}
+            <div class="label">{{ producto.nombre_campo3 }}</div>
+            <div class="value">{{ serial.campo3 }}</div>
+            {% endif %}
+
+            {% if producto.nombre_campo4 and serial.campo4 %}
+            <div class="label">{{ producto.nombre_campo4 }}</div>
+            <div class="value">{{ serial.campo4 }}</div>
+            {% endif %}
+
+            {% if producto.nombre_campo5 and serial.campo5 %}
+            <div class="label">{{ producto.nombre_campo5 }}</div>
+            <div class="value">{{ serial.campo5 }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Alerta -->
+        <div class="alerta">
+            SI ENCUENTRA ROTA LA CINTA DE SEGURIDAD VERIFIQUE EL CONTENIDO EN PRESENCIA DEL TRANSPORTADOR<br>
+            O COMUNÍQUESE CON NOSOTROS AL CELULAR O CORREO ELECTRÓNICO.
+        </div>
+
+        <!-- Pie -->
+        <div class="footer-text">
+            2025 Cintandina S.A.
+        </div>
+    </div>
+
+</body>
+</html>
+
+

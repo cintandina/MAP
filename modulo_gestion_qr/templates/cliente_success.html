@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% extends "_base.html" %}
+
+{% block title %}
+Cliente Creado con Éxito
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Cliente Creado con Éxito</h1>
+        <p class="text-lg text-gray-700 text-center mb-6">La siguiente es la información del cliente creado:</p>
+        
+        <!-- Tabla con información del cliente -->
+        <table class="w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-green-600 text-white">
+                    <th class="p-3 text-left">Campo</th>
+                    <th class="p-3 text-left">Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for field, value in cliente_data.items %}
+                    <tr class="{% cycle 'bg-gray-50' 'bg-white' %}">
+                        <td class="p-3 border border-gray-300 font-semibold text-gray-700">{{ field }}</td>
+                        <td class="p-3 border border-gray-300 text-gray-700">{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+

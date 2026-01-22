@@ -1,0 +1,115 @@
+{% load static %}  <!-- Importar archivos estáticos -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Producto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background: white;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            width: 200px;  /* Encabezado más pequeño */
+            display: block;
+            margin: 10px auto;
+        }
+        .footer {
+            width: 100%;
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+            height: auto; /* Permite ajuste dinámico */
+            transform: scaleY(0.6); /* Reduce la altura en un 40% */
+        }
+        .table-container {
+            margin-top: 20px;
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <img src="{% static 'images/encabezado.jpeg' %}" alt="Encabezado" class="header">
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <h1>Información del Producto</h1>
+        
+        <div class="table-container">
+            <table>
+                <tbody>
+                    <!-- Mostrar solo los campos adicionales con Nombre y Valor si tienen valores -->
+                    {% if serial.producto.nombre_campo1 and serial.campo1 %}
+                    <tr>
+                        <th>{{ serial.producto.nombre_campo1 }}</th>
+                        <td>{{ serial.campo1 }}</td>
+                    </tr>
+                    {% endif %}
+                    
+                    {% if serial.producto.nombre_campo2 and serial.campo2 %}
+                    <tr>
+                        <th>{{ serial.producto.nombre_campo2 }}</th>
+                        <td>{{ serial.campo2 }}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% if serial.producto.nombre_campo3 and serial.campo3 %}
+                    <tr>
+                        <th>{{ serial.producto.nombre_campo3 }}</th>
+                        <td>{{ serial.campo3 }}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% if serial.producto.nombre_campo4 and serial.campo4 %}
+                    <tr>
+                        <th>{{ serial.producto.nombre_campo4 }}</th>
+                        <td>{{ serial.campo4 }}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% if serial.producto.nombre_campo5 and serial.campo5 %}
+                    <tr>
+                        <th>{{ serial.producto.nombre_campo5 }}</th>
+                        <td>{{ serial.campo5 }}</td>
+                    </tr>
+                    {% endif %}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pie de página (Reducido en 40%) -->
+    <img src="{% static 'images/pie_de_pagina.jpeg' %}" alt="Pie de página" class="footer">
+
+</body>
+</html>

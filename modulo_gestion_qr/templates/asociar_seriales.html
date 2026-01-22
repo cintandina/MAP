@@ -1,0 +1,261 @@
+{% extends "_base.html" %}
+{% load i18n widget_tweaks %}
+
+{% block title %}{% trans "Asociar Códigos QR" %}{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+  <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-4xl">
+    <!-- Título -->
+    <h1 class="text-3xl font-bold text-green-700 text-center mb-6">
+      {% trans "Asociar Códigos QR" %}
+    </h1>
+
+    <!-- Mensajes -->
+    {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+          <div class="text-center font-semibold
+            {% if message.tags == 'success' %} text-green-600
+            {% elif message.tags == 'warning' %} text-yellow-600
+            {% else %} text-red-600 {% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Advertencia dinámica -->
+    <div id="dynamicWarning" class="mb-4 text-center text-yellow-600 font-semibold hidden"></div>
+
+    <!-- Errores generales -->
+    {% if form.non_field_errors %}
+      <div class="mb-4 text-center text-red-600 font-semibold">
+        {{ form.non_field_errors|first }}
+      </div>
+    {% endif %}
+
+    <!-- Formulario -->
+    <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% csrf_token %}
+
+      <!-- Rango de Seriales -->
+      <div>
+        <label for="{{ form.desde.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">{% trans "Desde" %}</label>
+        <input
+          id="{{ form.desde.id_for_label }}"
+          name="{{ form.desde.name }}"
+          type="number"
+          class="block w-full p-2.5 text-sm rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500 {% if form.desde.errors %}border-red-500{% endif %}"
+          placeholder="{% trans 'Serial inicial' %}"
+          value="{{ form.desde.value|default:'' }}"
+        >
+        {% if form.desde.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.desde.errors|first }}</p>
+        {% endif %}
+      </div>
+
+      <div>
+        <label for="{{ form.hasta.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">{% trans "Hasta" %}</label>
+        <input
+          id="{{ form.hasta.id_for_label }}"
+          name="{{ form.hasta.name }}"
+          type="number"
+          class="block w-full p-2.5 text-sm rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500 {% if form.hasta.errors %}border-red-500{% endif %}"
+          placeholder="{% trans 'Serial final' %}"
+          value="{{ form.hasta.value|default:'' }}"
+        >
+        {% if form.hasta.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.hasta.errors|first }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Botón Cargar Campos -->
+      <div class="md:col-span-2 flex justify-center mt-2">
+        <button type="button" id="cargarCampos"
+          class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+          {% trans "Cargar Campos" %}
+        </button>
+      </div>
+
+      <!-- Campos extra + Solicitud + Estado (inicialmente oculto) -->
+      <div id="camposExtras" class="hidden md:col-span-2">
+        <!-- Solicitud -->
+        <div>
+          <label for="{{ form.solicitud.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">{% trans "Solicitud" %}</label>
+          {{ form.solicitud|add_class:"block w-full p-2.5 text-sm rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500" }}
+          {% if form.solicitud.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ form.solicitud.errors|first }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Campos extra -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          {% for field in form %}
+            {% if field.name|slice:"0:5" == "campo" %}
+              <div>
+                <label id="label_{{ field.name }}" for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                  {% trans "Campo" %} {{ field.name|slice:"5:" }}
+                </label>
+                {{ field|add_class:"block w-full p-2.5 text-sm rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500" }}
+                {% if field.errors %}
+                  <p class="text-red-500 text-sm mt-1">{{ field.errors|first }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- Estado -->
+        <div class="mt-4">
+          <label for="{{ form.estado.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">{% trans "Estado" %}</label>
+          {{ form.estado|add_class:"block w-full p-2.5 text-sm rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500" }}
+          {% if form.estado.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ form.estado.errors|first }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Botón Asociar -->
+        <div class="flex justify-center mt-6">
+          <button type="submit"
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+            {% trans "Asociar" %}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Script para cargar campos al hacer clic en "Cargar Campos" -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const desdeEl = document.getElementById('id_desde');
+  const hastaEl = document.getElementById('id_hasta');
+  const btn = document.getElementById('cargarCampos');
+  const extras = document.getElementById('camposExtras');
+  const sel = document.getElementById('id_solicitud');
+  const fields = document.querySelectorAll('[id^=id_campo], #id_estado');
+  const warningDiv = document.getElementById('dynamicWarning');
+
+  function val(el) { return (el && el.value) ? el.value.trim() : ''; }
+  function bothRangeFilled() { return !!(val(desdeEl) && val(hastaEl)); }
+
+  // Asegura opción vacía “-----” al inicio y sin selección por defecto
+  (function ensureSolicitudPlaceholder() {
+    if (!sel) return;
+    const hasBlank = Array.from(sel.options).some(o => o.value === '');
+    if (!hasBlank) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = '-----';
+      sel.insertBefore(opt, sel.firstChild);
+    }
+    sel.value = ''; // sin selección inicial
+  })();
+
+  // Habilita/desabilita el botón según el rango
+  function toggleButton() {
+    if (btn) btn.disabled = !bothRangeFilled();
+  }
+  toggleButton();
+  if (desdeEl) desdeEl.addEventListener('input', toggleButton);
+  if (hastaEl) hastaEl.addEventListener('input', toggleButton);
+
+  // Cargar campos al hacer clic en "Cargar Campos"
+  if (btn) {
+    btn.addEventListener('click', function () {
+      const desde = val(desdeEl);
+      const hasta = val(hastaEl);
+
+      if (!bothRangeFilled()) {
+        alert('Por favor, complete el rango de seriales antes de continuar.');
+        return;
+      }
+
+      // Inferir la solicitud a partir del rango
+      fetch(`/api/solicitud_por_rango/?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`)
+        .then(r => r.json().then(data => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) throw new Error(data.error || 'Error al obtener las solicitudes.');
+
+          // Limpiar y poblar el select con todas las solicitudes
+          sel.innerHTML = '';
+          const placeholder = document.createElement('option');
+          placeholder.value = '';
+          placeholder.textContent = '-----';
+          sel.appendChild(placeholder);
+
+          data.solicitudes.forEach(sol => {
+            const opt = document.createElement('option');
+            opt.value = sol.id;
+            opt.textContent = sol.label;
+            sel.appendChild(opt);
+          });
+
+          // Seleccionar la solicitud asociada si es única
+          if (data.solicitud_seleccionada) {
+            sel.value = data.solicitud_seleccionada.id;
+          } else {
+            sel.value = ''; // Sin selección si no hay una única o hay múltiples
+          }
+
+          // Mostrar advertencia si existe
+          if (data.advertencia) {
+            if (warningDiv) {
+              warningDiv.textContent = data.advertencia;
+              warningDiv.classList.remove('hidden');
+            } else {
+              alert(data.advertencia);
+            }
+          } else {
+            if (warningDiv) warningDiv.classList.add('hidden');
+          }
+
+          // Cargar campos adicionales
+          fetch(`/api/obtener_campos_seriales/?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}&solicitud=${encodeURIComponent(data.solicitud_seleccionada?.id || '')}`)
+            .then(r => r.json())
+            .then(data => {
+              if (data.error) {
+                alert(data.error);
+                if (extras) extras.classList.add('hidden');
+                fields.forEach(el => el.value = '');
+                return;
+              }
+
+              // Rellena labels/valores de campo1..campo5
+              ['campo1', 'campo2', 'campo3', 'campo4', 'campo5'].forEach((c, i) => {
+                const lbl = document.getElementById(`label_${c}`);
+                const inp = document.getElementById(`id_${c}`);
+                if (lbl) lbl.textContent = data[`nombre_campo${i + 1}`] || `Campo ${i + 1}`;
+                if (inp) inp.value = data[`valor_campo${i + 1}`] || '';
+              });
+
+              // Sincroniza estado
+              const estadoSel = document.getElementById('id_estado');
+              if (estadoSel && data.estado) {
+                estadoSel.value = data.estado; // Asegurar que se aplique el valor real
+              }
+
+              if (extras) extras.classList.remove('hidden');
+            });
+        })
+        .catch(err => {
+          console.error(err);
+          alert(err.message || 'Ocurrió un error al cargar los campos. Inténtelo de nuevo.');
+          if (extras) extras.classList.add('hidden');
+          fields.forEach(el => el.value = '');
+          sel.value = '';
+          if (warningDiv) warningDiv.classList.add('hidden');
+        });
+    });
+  }
+});
+</script>
+{% endblock %}
+
+
+
+
+
+

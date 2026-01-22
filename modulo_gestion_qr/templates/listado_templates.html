@@ -1,0 +1,39 @@
+{% extends "_base.html" %}
+{% block title %}Listado de Templates{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <!-- Título -->
+        <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Listado de Templates</h1>
+
+        <!-- Tabla de Templates -->
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto border-collapse text-sm text-left">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-2 border-b">Nombre del Template</th>
+                        <th class="p-2 border-b">Cliente</th>
+                        <th class="p-2 border-b">Fecha de Creación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for template in templates %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-2">{{ template.nombre }}</td>
+                        <td class="p-2">{{ template.cliente.nombre }}</td>
+                        <td class="p-2">{{ template.fecha_creacion }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center py-4 text-red-500 font-semibold">
+                            No se encontraron templates registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

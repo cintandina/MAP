@@ -1,0 +1,1 @@
+web: gunicorn gestion_etiquetas_qr.wsgi —log-file -

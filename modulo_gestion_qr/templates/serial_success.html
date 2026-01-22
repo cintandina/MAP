@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% extends "_base.html" %}
+
+{% block title %}
+URLs Generadas
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full">
+        <h1 class="text-3xl font-bold text-green-700 text-center mb-8">URLs Generadas</h1>
+
+        {% if seriales %}
+            <div class="overflow-x-auto">
+                <table class="table-auto w-full border-collapse border border-gray-200 rounded-lg">
+                    <thead>
+                        <tr class="bg-green-600 text-white">
+                            <th class="px-4 py-2 text-left">Serial</th>
+                            <th class="px-4 py-2 text-left">URL</th>
+                            <th class="px-4 py-2 text-left">Estado</th>
+                            <th class="px-4 py-2 text-left">Fecha de Creación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in seriales %}
+                            <tr class="border-b border-gray-200">
+                                <td class="px-4 py-2">{{ item.serial }}</td>
+                                <td class="px-4 py-2">
+                                    <a href="{{ item.url }}" class="text-blue-600 underline" target="_blank">
+                                        {{ item.url }}
+                                    </a>
+                                </td>
+                                <td class="px-4 py-2">{{ item.estado }}</td>
+                                <td class="px-4 py-2">{{ item.fecha_creacion }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-gray-600 mt-4">No se generaron seriales.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+

@@ -1,0 +1,204 @@
+{% load static i18n custom_filters %}
+<!DOCTYPE html>
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ solicitud.razon_social|default:"Cintandina SA" }}</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=3">
+  
+
+  <!-- Wrapper seguro para analytics (evita error en DEBUG cuando gtag no existe) -->
+  <script>
+    function safeGtag() {
+      if (typeof gtag === 'function') {
+        gtag.apply(null, arguments);
+      }
+    }
+  </script>
+
+  <!-- Google Analytics 4 - Solo en producción y para landing page -->
+  {% if not DEBUG %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZV0TTDJPQ3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZV0TTDJPQ3', {
+      'page_path': '/landing/{{ solicitud.codigo }}/qr/', // Normaliza la ruta para análisis
+      'page_title': 'Landing {{ solicitud.razon_social|default:"Cintandina SA" }}'
+    });
+  </script>
+  {% endif %}
+</head>
+
+<body>
+  <section class="contenedor-principal" aria-labelledby="sobre-nosotros">
+    <header class="logo" role="img" aria-label="Logo de {{ solicitud.razon_social|default:'Empresa' }}">
+      <img
+        src="{{ solicitud.logo_url }}"
+        alt="Logo de {{ solicitud.razon_social|default:'Empresa' }}"
+        class="mb-4"
+        loading="lazy"
+        onerror="this.src='{% static 'images/default.png' %}'"
+      >
+    </header>
+
+    <section class="texto-justificado">
+      <h2 class="titulo-seccion" id="sobre-nosotros">{% trans "Sobre Nosotros" %}</h2>
+      <p>{{ solicitud.sobre_nosotros|default:"No disponible" }}</p>
+    </section>
+
+    <section class="contenedor-marco">
+      <label>{% trans "Razón Social:" %}</label>
+      <div class="campo">{{ solicitud.razon_social|default:"No disponible" }}</div>
+
+      <label>{% trans "NIT:" %}</label>
+      <div class="campo">{{ solicitud.nit|default:"No disponible" }}</div>
+
+      <label>{% trans "Dirección:" %}</label>
+      <div class="campo">
+        {% if solicitud.direccion %}
+          {{ solicitud.direccion }}
+        {% elif ubicacion and ubicacion.direccion %}
+          {{ ubicacion.direccion }}
+        {% else %}
+          {% trans "No disponible" %}
+        {% endif %}
+      </div>
+
+      <div class="fila-datos">
+        <div class="grupo-dato">
+          <label>{% trans "Teléfono:" %}</label>
+          <div class="campo">
+            {% if solicitud.telefono %}
+              {{ solicitud.telefono }}
+            {% elif ubicacion and ubicacion.telefono %}
+              {{ ubicacion.telefono }}
+            {% else %}
+              {% trans "No disponible" %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grupo-dato">
+          <label>{% trans "Ciudad:" %}</label>
+          <div class="campo">{{ ubicacion.ciudad|default:"No disponible" }}</div>
+        </div>
+      </div>
+
+      <label>{% trans "Correo Electrónico:" %}</label>
+      <div class="campo">
+        {% if solicitud.correo %}
+          <a
+            href="mailto:{{ solicitud.correo }}"
+            class="text-blue-600"
+            onclick="safeGtag('event', 'click_email', {'solicitud_codigo': '{{ solicitud.codigo }}'})"
+          >
+            {{ solicitud.correo }}
+          </a>
+        {% else %}
+          {% trans "No disponible" %}
+        {% endif %}
+      </div>
+
+      <label>{% trans "Página Web:" %}</label>
+      <div class="campo">
+        {% if solicitud.pagina_web %}
+          <a
+            href="{{ solicitud.pagina_web }}"
+            target="_blank"
+            rel="noopener"
+            onclick="safeGtag('event', 'click_website', {'solicitud_codigo': '{{ solicitud.codigo }}'})"
+          >
+            {{ solicitud.pagina_web }}
+          </a>
+        {% else %}
+          {% trans "No disponible" %}
+        {% endif %}
+      </div>
+
+      {% if solicitud.link_adicional %}
+        <label>{% trans "Más información:" %}</label>
+        <div class="campo">
+          <a
+            href="{{ solicitud.link_adicional }}"
+            target="_blank"
+            rel="noopener"
+            onclick="safeGtag('event', 'click_link_adicional', {'solicitud_codigo': '{{ solicitud.codigo }}'})"
+          >
+            {{ solicitud.link_adicional }}
+          </a>
+        </div>
+      {% endif %}
+
+      <div class="contenedor-marco2">
+        {% trans "SI SE ENCUENTRA ROTA LA CINTA DE SEGURIDAD VERIFIQUE EL CONTENIDO EN PRESENCIA DEL TRANSPORTADOR O COMUNÍQUESE CON NOSOTROS." %}
+      </div>
+    </section>
+
+    <section class="botones" style="display:flex; justify-content:center; gap:3px; flex-wrap:wrap;">
+      {% if solicitud.mostrar_boton_entrega %}
+        <a
+          class="boton"
+          href="{% url 'formulario_entrega' %}?serial={{ serial.serial }}"
+          target="_blank"
+          rel="noopener"
+          aria-label="{% trans 'Confirmar entrega del pedido' %}"
+          onclick="safeGtag('event', 'click_confirmar_entrega', {'solicitud_codigo': '{{ solicitud.codigo }}'})"
+        >
+          <i class="fas fa-box"></i> {% trans "Confirmar entrega" %}
+        </a>
+      {% endif %}
+
+      {% with telefono_wa=solicitud.telefono|phone_format %}
+        {% if telefono_wa %}
+          <a
+            class="boton"
+            href="https://wa.me/{{ telefono_wa }}?text={% trans 'Hola, necesito ayuda con un pedido que recibí de' %} {{ solicitud.razon_social|default:'Cintandina SA'|urlencode }}"
+            target="_blank"
+            rel="noopener"
+            aria-label="{% trans 'Reportar incidente vía WhatsApp' %}"
+            onclick="safeGtag('event', 'click_whatsapp', {'solicitud_codigo': '{{ solicitud.codigo }}'})"
+          >
+            <i class="fab fa-whatsapp"></i> {% trans "Inquietudes y sugerencias" %}
+          </a>
+        {% elif ubicacion and ubicacion.telefono %}
+          {% with telefono_wa=ubicacion.telefono|phone_format %}
+            <a
+              class="boton"
+              href="https://wa.me/{{ telefono_wa }}?text={% trans 'Hola, necesito ayuda con un pedido que recibí de' %} {{ solicitud.razon_social|default:'Cintandina SA'|urlencode }}"
+              target="_blank"
+              rel="noopener"
+              aria-label="{% trans 'Reportar incidente vía WhatsApp' %}"
+              onclick="safeGtag('event', 'click_whatsapp', {'solicitud_codigo': '{{ solicitud.codigo }}'})"
+            >
+              <i class="fab fa-whatsapp"></i> {% trans "Inquietudes y sugerencias" %}
+            </a>
+          {% endwith %}
+        {% else %}
+          <span class="boton desactivado" aria-label="{% trans 'Reportar incidente vía WhatsApp no disponible' %}">
+            <i class="fab fa-whatsapp"></i> {% trans "Inquietudes y sugerencias (Teléfono no disponible)" %}
+          </span>
+        {% endif %}
+      {% endwith %}
+    </section>
+  </section>
+
+  <!-- Script para propiedades de usuario y depuración -->
+  {% if not DEBUG %}
+  <script>
+    gtag('set', 'user_properties', {
+      'solicitud_codigo': '{{ solicitud.codigo }}',
+      'razon_social': '{{ solicitud.razon_social|default:"Cintandina SA" }}',
+      'user_type': 'landing_visitor'
+    });
+    console.log('GA4 loaded for landing page: {{ solicitud.codigo }}');
+  </script>
+  {% endif %}
+</body>
+</html>
+

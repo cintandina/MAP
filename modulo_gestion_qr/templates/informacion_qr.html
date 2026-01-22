@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del QR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0fdf4; /* Verde suave */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1f9d55;
+        }
+        .serial-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Información del Serial</h1>
+        <div class="serial-info">
+            <p><strong>Cliente:</strong> {{ cliente.nombre }}</p>
+            <p><strong>Producto:</strong> {{ producto.nombre }} ({{ producto.codigo_producto }})</p>
+            <p><strong>Serial:</strong> {{ serial.serial }}</p>
+            <p><strong>Estado:</strong> {{ serial.estado }}</p>
+            <p><strong>URL:</strong> <a href="{{ serial.url }}">{{ serial.url }}</a></p>
+        </div>
+    </div>
+</body>
+</html>

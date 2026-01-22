@@ -1,0 +1,38 @@
+{% extends "_base.html" %}
+{% block title %}Listado de Clientes{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 min-h-screen p-6">
+    <!-- Título -->
+    <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Listado de Clientes</h1>
+
+    <!-- Tabla de Clientes -->
+    <div class="mt-4 overflow-x-auto bg-white p-4 rounded-lg shadow-lg">
+        <table class="w-full table-auto border-collapse text-sm text-left">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 border-b">Nombre</th>
+                    <th class="p-2 border-b">Código Cliente</th>
+                    <th class="p-2 border-b">Slug</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-2">{{ cliente.nombre }}</td>
+                    <td class="p-2">{{ cliente.codigo_cliente }}</td>
+                    <td class="p-2">{{ cliente.slug }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-4 text-red-500 font-semibold">
+                        No se encontraron clientes registrados.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmar Entrega - {{ solicitud.razon_social|default:"Cintandina SA" }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background-image: url('{% static "img/FONDO_CINTA_DE_SEGURIDAD_INTELIGENTE-01.png" %}');
+      background-size: cover;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    .contenedor-principal {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px;
+    }
+    .logo img {
+      width: 200px;
+      height: auto;
+      object-fit: cover;
+      display: block;
+      margin: 20px auto;
+    }
+    .formulario {
+      background-color: white;
+      border-radius: 25px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      padding: 40px 20px;
+      text-align: left;
+    }
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+      display: block;
+      margin-top: 15px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 5px 0 15px;
+      border-radius: 20px;
+      border: none;
+      background-color: #eeeeee;
+      color: #555;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    canvas {
+      width: 100%;
+      height: 150px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      touch-action: none;
+    }
+    video, img.preview {
+      width: 100%;
+      max-height: 300px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: block;
+    }
+    .preview {
+      display: none;
+    }
+    button {
+      width: 100%;
+      background-color: #787E87;
+      color: white;
+      border: none;
+      padding: 15px;
+      font-size: 16px;
+      border-radius: 15px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #5f656b;
+    }
+    .boton-limpiar {
+      background-color: #ff4d4d;
+    }
+    .boton-limpiar:hover {
+      background-color: #e63939;
+    }
+    .boton i {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor-principal">
+    <div class="logo">
+      <img src="{{ solicitud.logo_url }}" alt="Logo de {{ solicitud.razon_social|default:'Empresa' }}" class="max-w-xs mb-4">
+    </div>
+    <div class="formulario">
+      <h2><i class="fas fa-box" style="margin-right: 10px;"></i>Confirmar Entrega</h2>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="id_nombre">Nombre:</label>
+        <input type="text" name="nombre" id="id_nombre" required>
+
+        <label for="id_correo">Correo Electrónico:</label>
+        <input type="email" name="correo" id="id_correo" required>
+
+        <label for="id_telefono">Teléfono:</label>
+        <input type="tel" name="telefono" id="id_telefono" required>
+
+        <!-- FOTO -->
+        <label>Foto de Evidencia:</label>
+        <video id="video" autoplay playsinline></video>
+        <button type="button" onclick="capturarFoto()" class="boton">
+          <i class="fas fa-camera"></i>Capturar Foto
+        </button>
+        <canvas id="canvasFoto" class="preview"></canvas>
+        <input type="hidden" name="foto" id="fotoBase64">
+        <img id="previewFoto" class="preview">
+
+        <!-- FIRMA -->
+        <label>Firma:</label>
+        <canvas id="canvasFirma"></canvas>
+        <input type="hidden" name="firma" id="firmaBase64">
+        <button type="button" onclick="limpiarFirma()" class="boton boton-limpiar">
+          <i class="fas fa-eraser"></i>Limpiar Firma
+        </button>
+
+        <button type="submit" class="boton">
+          <i class="fas fa-check"></i>Confirmar y Enviar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // === FOTO ===
+    const video = document.getElementById('video');
+    const canvasFoto = document.getElementById('canvasFoto');
+    const previewFoto = document.getElementById('previewFoto');
+    const inputFoto = document.getElementById('fotoBase64');
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(stream => { video.srcObject = stream; })
+      .catch(err => console.error("Error accediendo a la cámara: ", err));
+
+    function capturarFoto() {
+      canvasFoto.width = video.videoWidth;
+      canvasFoto.height = video.videoHeight;
+      const ctx = canvasFoto.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      const dataURL = canvasFoto.toDataURL('image/png');
+      previewFoto.src = dataURL;
+      previewFoto.style.display = 'block';
+      inputFoto.value = dataURL;
+    }
+
+    // === FIRMA ===
+    const canvasFirma = document.getElementById('canvasFirma');
+    const ctxFirma = canvasFirma.getContext('2d');
+    ctxFirma.lineWidth = 2;
+    ctxFirma.strokeStyle = '#000';
+    let dibujando = false;
+
+    function obtenerXY(e) {
+      const rect = canvasFirma.getBoundingClientRect();
+      return {
+        x: e.clientX ? e.clientX - rect.left : e.touches[0].clientX - rect.left,
+        y: e.clientY ? e.clientY - rect.top : e.touches[0].clientY - rect.top
+      };
+    }
+
+    function empezarDibujo(e) {
+      dibujando = true;
+      const { x, y } = obtenerXY(e);
+      ctxFirma.beginPath();
+      ctxFirma.moveTo(x, y);
+      e.preventDefault();
+    }
+
+    function dibujar(e) {
+      if (!dibujando) return;
+      const { x, y } = obtenerXY(e);
+      ctxFirma.lineTo(x, y);
+      ctxFirma.stroke();
+      e.preventDefault();
+    }
+
+    function detenerDibujo() {
+      dibujando = false;
+      document.getElementById('firmaBase64').value = canvasFirma.toDataURL('image/png');
+    }
+
+    function limpiarFirma() {
+      ctxFirma.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+      document.getElementById('firmaBase64').value = '';
+    }
+
+    canvasFirma.addEventListener('mousedown', empezarDibujo);
+    canvasFirma.addEventListener('mousemove', dibujar);
+    canvasFirma.addEventListener('mouseup', detenerDibujo);
+    canvasFirma.addEventListener('mouseleave', detenerDibujo);
+
+    canvasFirma.addEventListener('touchstart', empezarDibujo);
+    canvasFirma.addEventListener('touchmove', dibujar);
+    canvasFirma.addEventListener('touchend', detenerDibujo);
+  </script>
+</body>
+</html>
+

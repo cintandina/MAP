@@ -1,0 +1,198 @@
+/* Variables CSS para colores */
+:root {
+    --dark-green: #00833f; /* Un verde más oscuro si se necesita */
+    --dark-text: #666666;
+}
+
+/* === RESETEO GLOBAL PARA ELIMINAR FRANJA BLANCA Y ESPACIOS INDESEADOS === */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark-text);
+    overflow-x: hidden; /* Evita scroll horizontal inesperado */
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Elimina márgenes/padding por defecto de elementos comunes */
+h1, h2, h3, p, span, a, ul, li {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Header (fondo completo sin franja blanca) */
+.header {
+    background: url('/static/assets/FONDO_CINTA_DE_SEGURIDAD_INTELIGENTE-01.png') center/cover no-repeat;
+    min-height: 100vh;                    /* Ocupa toda la pantalla */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Elimina cualquier margen interno del header */
+.header * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Contenedor interno (controla el ancho máximo y centrado) */
+.banner-container {
+    max-width: 1200px;
+    width: 100%;
+    text-align: center;
+    margin: 15px auto;   /* Espacio controlado solo aquí */
+    padding: 0 20px;
+}
+
+/* Texto */
+.line1 h1 {
+    font-size: 3em;
+    color: var(--dark-green);
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+}
+
+.line2 {
+    font-size: 3em;
+    color: var(--dark-text);
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    display: block;
+    text-align: center;
+}
+
+.line3 {
+    font-size: 2.3em;
+    color: var(--dark-green);
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    display: block;
+    text-align: center;
+}
+
+/* Imagen central */
+.pegatin-cintandina {
+    width: 400px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Línea 4 (párrafo justificado) */
+.line4 {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.line4 p {
+    font-size: 1em;
+    color: var(--dark-text);
+    text-align: justify;
+    line-height: 1.5;
+    max-width: 1150px;   
+    margin: 10px auto;   
+    padding: 0 40px;     
+}
+
+/* Línea 5 (texto centrado) */
+.line5 {
+    font-size: 1em;
+    color: var(--dark-text); 
+    text-align: center;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ajustes generales para line1, line2, line5 */
+.line1 h1,
+.line2,
+.line5 {
+    line-height: 1.2; /* Reduce el espacio entre líneas */
+    margin: 0; /* Elimina márgenes que añaden separación extra */
+    padding: 0;
+}
+
+/* ------------------- ESTILOS RESPONSIVE ------------------- */
+
+/* Celulares (max-width: 700px) */
+@media (max-width: 700px) {
+    .banner-container {
+        width: 100%;
+        height: auto;
+        justify-content: center;
+        align-items: center;
+        text-align: center; 
+        overflow-x: hidden;
+        padding: 0 15px;
+    }
+
+    .pegatin-cintandina {
+        width: 300px;             
+        height: auto;
+        margin: 0 auto;
+    }
+
+    .line1 h1 {
+        font-size: 2.5em;
+        line-height: 1.2;
+    }
+
+    .line2 {
+        font-size: 2.0em;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+
+    .line3 {
+        font-size: 1em;
+        line-height: 1.1;
+        margin: 0 45px; 
+        text-align: center;
+        display: block;
+    }
+
+    .line4 p {
+        font-size: 0.5em;
+        text-align: justify;
+        line-height: 1;
+        margin: 20px 50px 0 50px;
+        padding: 0;
+    }
+
+    .line5 {
+        font-size: 0.6em;
+        line-height: 1.2;
+        margin: 0;
+        padding: 0;
+    }
+
+    .line1 h1,
+    .line2 {
+        line-height: 1.2;
+    }
+}
+   

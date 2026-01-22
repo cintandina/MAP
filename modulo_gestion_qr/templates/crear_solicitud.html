@@ -1,0 +1,345 @@
+{% extends "_base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}Crear Solicitud{% endblock %}
+
+{% block content %}
+
+{# ====== Estilos SOLO para el toggle (independientes de Tailwind) ====== #}
+<style>
+  .toggle-row { display:flex; align-items:center; gap:12px; user-select:none; }
+  .visually-hidden {
+    position:absolute !important; width:1px !important; height:1px !important;
+    padding:0 !important; margin:-1px !important; overflow:hidden !important;
+    clip:rect(0,0,0,0) !important; white-space:nowrap !important; border:0 !important;
+  }
+  .toggle-track { position:relative; width:44px; height:24px; background:#D1D5DB; border-radius:9999px; transition:background .2s ease; flex-shrink:0; }
+  .toggle-knob { position:absolute; top:3px; left:3px; width:18px; height:18px; background:#fff; border-radius:9999px; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .2s ease; }
+  #id_mostrar_boton_entrega:checked + label .toggle-track { background:#16A34A; }
+  #id_mostrar_boton_entrega:checked + label .toggle-knob { transform: translateX(20px); }
+  #id_mostrar_boton_entrega:focus + label .toggle-track { box-shadow:0 0 0 4px rgba(134,239,172,.6); outline:none; }
+  .toggle-text { font-size:.9rem; font-weight:600; color:#374151; line-height:1.5; }
+  .toggle-help { font-size:.75rem; color:#6B7280; margin-top:.25rem; }
+</style>
+
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+  <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-3xl">
+    <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Crear Nueva Solicitud</h1>
+
+    {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+          <div class="{% if message.tags == 'success' %}bg-green-100 border-green-400 text-green-700{% elif message.tags == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-yellow-100 border-yellow-400 text-yellow-700{% endif %} border px-4 py-3 rounded relative" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if form.errors or formset.errors %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        <p>Por favor, corrige los siguientes errores:</p>
+        <ul>
+          {% for field in form %}
+            {% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+          {% for ubicacion_form in formset %}
+            {% for field in ubicacion_form %}
+              {% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 gap-6">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <!-- Código + Logo -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Código de Solicitud</label>
+          <div class="flex gap-2">
+            {{ form.codigo|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+            <button type="button" onclick="generarCodigo()" class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg">Generar</button>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Logo (se guardará en Amazon S3)</label>
+          {{ form.logo|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+          <p class="text-sm text-gray-500 mt-1">Formatos aceptados: PNG, JPG, JPEG (máximo 5MB).</p>
+        </div>
+      </div>
+
+      <!-- Información Interna -->
+      <hr class="my-4">
+      <h2 class="text-lg font-semibold text-gray-700 mt-2 mb-2">Información Interna</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Cajas</label>
+          {{ form.cajas|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Cintas</label>
+          {{ form.rollos|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+          <p class="text-xs text-gray-500 mt-1">Se calcula como cajas * 36 (editable)</p>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Seriales</label>
+          {{ form.seriales|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+          <p class="text-xs text-gray-500 mt-1">Se calcula como cintas * 36 (editable)</p>
+        </div>
+      </div>
+
+      <!-- Información Landing Page -->
+      <hr class="my-4">
+      <h2 class="text-lg font-semibold text-gray-700 mt-2 mb-2">Información Landing Page</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Sobre Nosotros</label>
+          {{ form.sobre_nosotros|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Razón Social</label>
+          {{ form.razon_social|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">NIT</label>
+          {{ form.nit|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Correo Electrónico</label>
+          {{ form.correo|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Página Web</label>
+          {{ form.pagina_web|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Link Adicional</label>
+          {{ form.link_adicional|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+        </div>
+
+        {# Celular (WhatsApp) — desde Solicitud #}
+        <div class="md:col-span-2">
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Celular (WhatsApp)</label>
+          {{ form.celular|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+          <p class="text-xs text-gray-500 mt-1">Se usará para el botón de WhatsApp en la landing.</p>
+        </div>
+
+        <!-- Toggle: Mostrar botón de confirmar entrega -->
+        <div class="col-span-2" style="margin-top: 1.25rem;">
+          <input
+            id="id_mostrar_boton_entrega"
+            name="{{ form.mostrar_boton_entrega.html_name }}"
+            type="checkbox"
+            class="visually-hidden"
+            {% if form.instance.pk %}
+              {% if form.instance.mostrar_boton_entrega %}checked{% endif %}
+            {% else %}
+              {% if form.initial.mostrar_boton_entrega %}checked{% endif %}
+            {% endif %}
+          >
+          <label for="id_mostrar_boton_entrega" class="toggle-row">
+            <span class="toggle-track"><span class="toggle-knob"></span></span>
+            <span class="toggle-text">{{ form.mostrar_boton_entrega.label }}</span>
+          </label>
+
+          {% if form.mostrar_boton_entrega.errors %}
+            <p style="color:#ef4444; font-size:.875rem; margin-top:.25rem;">{{ form.mostrar_boton_entrega.errors|first }}</p>
+          {% endif %}
+          <p class="toggle-help">Si está activado, la landing de esta solicitud mostrará el botón “Confirmar entrega”.</p>
+        </div>
+      </div>
+
+      <!-- Ubicaciones (dinámicas) -->
+      <hr class="my-4">
+      <div class="flex items-center justify-between mt-2">
+        <h2 class="text-lg font-semibold text-gray-700">Ubicaciones</h2>
+        <button type="button" id="add-ubicacion" class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg">
+          + Agregar ubicación
+        </button>
+      </div>
+
+      {{ formset.management_form }}
+
+      <div id="ubicaciones-container" class="space-y-4">
+        {% for ubicacion_form in formset %}
+          <div class="ubicacion-item border border-gray-200 rounded-lg p-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                {{ ubicacion_form.direccion.label_tag }}
+                {{ ubicacion_form.direccion|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+              </div>
+              <div>
+                {{ ubicacion_form.telefono.label_tag }}
+                {{ ubicacion_form.telefono|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+              </div>
+              <div>
+                {{ ubicacion_form.ciudad.label_tag }}
+                {{ ubicacion_form.ciudad|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" }}
+              </div>
+            </div>
+
+            {% if ubicacion_form.DELETE %}
+              <input type="checkbox" class="hidden delete-field" name="{{ ubicacion_form.DELETE.html_name }}" id="{{ ubicacion_form.DELETE.id_for_label }}">
+            {% endif %}
+
+            <div class="flex justify-end mt-3">
+              <button type="button" class="btn-remove-ubicacion text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {# Empty form para clonar nuevas filas #}
+      <template id="empty-ubicacion-template">
+        <div class="ubicacion-item border border-gray-200 rounded-lg p-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              {{ formset.empty_form.direccion.label_tag|safe }}
+              {{ formset.empty_form.direccion|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"|safe }}
+            </div>
+            <div>
+              {{ formset.empty_form.telefono.label_tag|safe }}
+              {{ formset.empty_form.telefono|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"|safe }}
+            </div>
+            <div>
+              {{ formset.empty_form.ciudad.label_tag|safe }}
+              {{ formset.empty_form.ciudad|add_class:"w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"|safe }}
+            </div>
+          </div>
+
+          {% if formset.empty_form.DELETE %}
+            <input type="checkbox" class="hidden delete-field" name="{{ formset.empty_form.DELETE.html_name }}" id="{{ formset.empty_form.DELETE.id_for_label }}">
+          {% endif %}
+
+          <div class="flex justify-end mt-3">
+            <button type="button" class="btn-remove-ubicacion text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <!-- Botón final -->
+      <div>
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+          Crear Solicitud
+        </button>
+      </div>
+
+      {% if exito %}
+        <div class="bg-green-100 text-green-800 border border-green-300 p-4 rounded-md mt-4 text-center">
+          <p class="font-semibold mb-2">Solicitud creada exitosamente</p>
+          <p><strong>Código:</strong> {{ codigo_generado }}</p>
+          <p><strong>URL generada:</strong> <a href="{{ url_generada }}" class="text-green-700 underline" target="_blank">{{ url_generada }}</a></p>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- Script para generar el código y calcular cintas/seriales -->
+<script>
+function generarCodigo() {
+  const codigo = 'CI' + Math.random().toString(36).substring(2, 10).toUpperCase();
+  const input = document.getElementById('id_codigo');
+  if (input) input.value = codigo;
+}
+
+function calcularCintasYSeriales() {
+  const cajasInput = document.getElementById('id_cajas');
+  const cintasInput = document.getElementById('id_rollos');
+  const serialesInput = document.getElementById('id_seriales');
+
+  if (cajasInput && cintasInput && serialesInput) {
+    let cajas = parseInt(cajasInput.value) || 0;
+    let cintas = parseInt(cintasInput.value) || 0;
+
+    if (cajasInput === document.activeElement || !cintas) {
+      cintas = cajas * 36;
+      cintasInput.value = cintas;
+    }
+    let seriales = cintas * 1; // tu cálculo actual
+    serialesInput.value = seriales;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const cajasInput = document.getElementById('id_cajas');
+  const cintasInput = document.getElementById('id_rollos');
+  const serialesInput = document.getElementById('id_seriales');
+  if (cajasInput) cajasInput.addEventListener('input', calcularCintasYSeriales);
+  if (cintasInput) cintasInput.addEventListener('input', calcularCintasYSeriales);
+  if (serialesInput) serialesInput.addEventListener('input', function() {});
+  calcularCintasYSeriales();
+
+  // === JS robusto para el formset dinámico de Ubicaciones ===
+  const addBtn = document.getElementById('add-ubicacion');
+  const container = document.getElementById('ubicaciones-container');
+  const tpl = document.getElementById('empty-ubicacion-template');
+
+  if (!addBtn || !container || !tpl) {
+    console.warn('Formset dinámico: faltan nodos en el DOM (addBtn/container/template).');
+    return;
+  }
+
+  // Intenta obtener TOTAL_FORMS con el prefijo esperado y con fallback
+  let totalFormsInput =
+    document.querySelector('input[name="{{ formset.prefix }}-TOTAL_FORMS"]') ||
+    container.querySelector('input[name$="-TOTAL_FORMS"]') ||
+    document.querySelector('input[name$="-TOTAL_FORMS"]');
+
+  if (!totalFormsInput) {
+    console.warn('Formset dinámico: no se encontró TOTAL_FORMS. Verifica el management_form en el template.');
+    return;
+  }
+
+  function bindRemoveButtons(scope) {
+    (scope || document).querySelectorAll('.btn-remove-ubicacion').forEach(btn => {
+      btn.onclick = function() {
+        const item = this.closest('.ubicacion-item');
+        const del = item.querySelector('input.delete-field');
+        if (del) { // si existe campo DELETE (instancias existentes)
+          del.checked = true;
+          item.style.display = 'none';
+        } else {   // nuevas filas: quitamos del DOM y decrementamos TOTAL_FORMS
+          item.remove();
+          const current = parseInt(totalFormsInput.value, 10) || 0;
+          totalFormsInput.value = Math.max(0, current - 1);
+        }
+      };
+    });
+  }
+  bindRemoveButtons();
+
+  addBtn.addEventListener('click', function() {
+    const index = parseInt(totalFormsInput.value, 10) || 0;
+    const fragment = document.importNode(tpl.content, true);
+
+    fragment.querySelectorAll('[name],[id],[for]').forEach(el => {
+      ['name','id','for'].forEach(attr => {
+        if (el.hasAttribute(attr)) {
+          el.setAttribute(attr, el.getAttribute(attr).replace(/__prefix__/g, index));
+        }
+      });
+    });
+
+    container.appendChild(fragment);
+    totalFormsInput.value = index + 1;
+    bindRemoveButtons(container);
+  });
+});
+</script>
+{% endblock %}
+
+
+
+
+

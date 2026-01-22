@@ -1,0 +1,85 @@
+{% extends "_base.html" %}
+{% block title %}Generar Seriales{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-xl">
+        <h1 class="text-3xl font-bold text-green-700 text-center mb-8">Generar Seriales</h1>
+        <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6" id="form-generar-seriales">
+            {% csrf_token %}
+            
+            <!-- Renderización automática del formulario -->
+            {% for field in form %}
+                <div class="flex flex-col">
+                    <label for="{{ field.id_for_label }}" class="text-sm font-semibold text-gray-700 mb-2">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <!-- Botón -->
+            <div class="col-span-1 md:col-span-2 flex flex-col items-center mt-4">
+                <button 
+                    type="submit" 
+                    id="submitButton"
+                    class="bg-green-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Generar Serial
+                </button>
+
+                <!-- Spinner -->
+                <div id="loadingFeedback" class="hidden mt-4 text-center">
+                    <div class="flex items-center space-x-2">
+                        <svg class="animate-spin h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-700">Generando seriales, por favor espere...</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script para cargar productos dinámicamente -->
+<script>
+document.getElementById('id_cliente').addEventListener('change', function() {
+    const clienteId = this.value;
+    const productoSelect = document.getElementById('id_producto');
+
+    productoSelect.innerHTML = '<option value="">Seleccione un producto</option>';
+
+    if (clienteId) {
+        fetch(`/api/productos/${clienteId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(producto => {
+                    const option = document.createElement('option');
+                    option.value = producto.id;
+                    option.textContent = producto.nombre;
+                    productoSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al cargar productos:', error));
+    }
+});
+</script>
+
+<!-- Script para feedback visual al enviar -->
+<script>
+document.getElementById('form-generar-seriales').addEventListener('submit', function () {
+    const submitBtn = document.getElementById('submitButton');
+    const feedback = document.getElementById('loadingFeedback');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Procesando...";
+    feedback.classList.remove('hidden');
+});
+</script>
+{% endblock %}
+
+

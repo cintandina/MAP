@@ -1,0 +1,123 @@
+{% load static %}
+{% load rol_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MAP Cintandina{% endblock %}</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.svg' %}">
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .navbar-bg { background-color: #FFFFFF; }
+        .navbar-text { color: black; font-weight: bold; }
+        .sidebar-bg { background-color: #FFFFFF; }
+        .sidebar-link { color: #333; font-weight: normal; display: flex; align-items: center; gap: 8px; }
+        .sidebar-link:hover { background-color: #e0e0e0; }
+        .category-title { color: #2d3748; font-size: 0.9rem; font-weight: bold; margin-top: 1rem; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<!-- Navbar -->
+<nav class="navbar-bg border-gray-200 fixed w-full z-50 top-0 shadow-lg">
+    <div class="flex justify-between items-center px-4 py-3">
+        <a href="{% url 'home' %}" class="flex items-center space-x-2">
+            <img src="{% static 'images/logo_header.svg' %}" alt="Logo" class="h-10 rounded-lg">
+            <span class="text-2xl font-bold navbar-text"></span>
+        </a>
+        <form method="POST" action="{% url 'logout' %}" class="hidden md:inline-block">
+            {% csrf_token %}
+            <button type="submit"
+                    class="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-150">
+                Cerrar Sesión
+            </button>
+        </form>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<aside id="default-sidebar" class="fixed top-16 left-0 z-40 w-64 h-screen transform -translate-x-full md:translate-x-0 transition-transform duration-300 sidebar-bg px-3 py-4 overflow-y-auto">
+    <div class="h-full px-3 py-4 overflow-y-auto">
+        {% if request.user.is_authenticated %}
+
+            <!-- Gestión de Seriales -->
+            {% if request.user.is_superuser or request.user|has_rol:"Gestión de Seriales" %}
+                <p class="category-title"><img src="{% static 'images/gestion_seriales_icon.svg' %}" alt="Icono Seriales" class="h-5 inline"> Gestión de Seriales</p>
+                <ul class="space-y-2">
+                    <li><a href="{% url 'generar_seriales' %}" class="flex items-center p-2 sidebar-link rounded-lg">Generar Seriales</a></li>
+                    <li><a href="{% url 'asociar_seriales' %}" class="flex items-center p-2 sidebar-link rounded-lg">Asociar Seriales</a></li>
+                    <li><a href="{% url 'buscar_seriales' %}" class="flex items-center p-2 sidebar-link rounded-lg">Buscar Seriales</a></li>
+                </ul>
+            {% endif %}
+
+            <!-- Gestión de Clientes -->
+            {% if request.user.is_superuser or request.user|has_rol:"Gestión de Clientes" %}
+                <p class="category-title"><img src="{% static 'images/gestion_clientes_icon.svg' %}" alt="Icono Clientes" class="h-5 inline"> Gestión de Clientes</p>
+                <ul class="space-y-2">
+                    <li><a href="{% url 'crear_cliente' %}" class="flex items-center p-2 sidebar-link rounded-lg">Crear Cliente</a></li>
+                    <li><a href="{% url 'listado_clientes' %}" class="flex items-center p-2 sidebar-link rounded-lg">Buscar Clientes</a></li>
+                </ul>
+            {% endif %}
+
+            <!-- Gestión de Productos -->
+            {% if request.user.is_superuser or request.user|has_rol:"Gestión de Productos" %}
+                <p class="category-title"><img src="{% static 'images/gestion_productos_icon.svg' %}" alt="Icono Productos" class="h-5 inline"> Gestión de Productos</p>
+                <ul class="space-y-2">
+                    <li><a href="{% url 'crear_producto' %}" class="flex items-center p-2 sidebar-link rounded-lg">Crear Producto</a></li>
+                    <li><a href="{% url 'listado_productos' %}" class="flex items-center p-2 sidebar-link rounded-lg">Buscar Productos</a></li>
+                </ul>
+            {% endif %}
+
+            <!-- Gestión de Templates -->
+            {% if request.user.is_superuser or request.user|has_rol:"Gestión de Templates" %}
+                <p class="category-title"><img src="{% static 'images/gestion_templates_icon.svg' %}" alt="Icono Templates" class="h-5 inline"> Gestión de Templates</p>
+                <ul class="space-y-2">
+                    <li><a href="{% url 'crear_template_cliente' %}" class="flex items-center p-2 sidebar-link rounded-lg">Crear Template Cliente</a></li>
+                </ul>
+            {% endif %}
+
+            <!-- Gestión de Solicitudes -->
+            {% if request.user.is_superuser or request.user|has_rol:"Gestión de Seriales" %}
+                <p class="category-title">
+                    <img src="{% static 'images/gestion_seriales_icon.svg' %}" alt="Icono Solicitudes" class="h-5 inline">
+                    Gestión de Solicitudes
+                </p>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'crear_solicitud' %}" class="flex items-center p-2 sidebar-link rounded-lg">
+                            Crear Solicitud
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'buscar_solicitud' %}" class="flex items-center p-2 sidebar-link rounded-lg">
+                            Buscar Solicitud
+                        </a>
+                    </li>
+                </ul>
+            {% endif %}
+
+
+        {% endif %}
+    </div>
+</aside>
+
+<!-- Main Content -->
+<div class="p-6 mt-20 md:ml-64">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,4 @@
+clave PostgreSQL = 2024
+
+reconstruir css:
+npx tailwindcss -i ./static/src/input.css -o ./static/src/output.css --watch
